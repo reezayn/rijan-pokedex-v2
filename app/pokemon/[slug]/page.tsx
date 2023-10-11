@@ -12,6 +12,19 @@ type Props = {
   }
 }
 
+export const revalidate = 604800 // Revalidates this page every 'x' seconds where x is the value after equals to sign
+
+export async function generateStaticParams() {
+  const res = await fetch(
+    `https://raw.githubusercontent.com/reezayn/pokemon-data.json/master/pokedex.json`
+  )
+  const data = await res.json()
+  const slugRoutes = data.map((pokemon: Pokemon, index: number) =>
+    pokemon.id.toString()
+  )
+  return slugRoutes.map((slug: string) => ({ slug }))
+}
+
 const PokemonPage = async ({ params: { slug } }: Props) => {
   const res = await fetch(
     `https://raw.githubusercontent.com/reezayn/pokemon-data.json/master/pokedex.json`,
@@ -24,7 +37,11 @@ const PokemonPage = async ({ params: { slug } }: Props) => {
         href="/pokemon"
         className="absolute m-3 lg:my-5 lg:mx-10 top-0 left-0"
       >
-        <Image src={Logo} alt="Rijans Pokedex" className="z-[99] h-14 w-14 xl:h-20 xl:w-20" />
+        <Image
+          src={Logo}
+          alt="Rijans Pokedex"
+          className="z-[99] h-14 w-14 xl:h-20 xl:w-20"
+        />
       </Link>
       {data.map((pokemon: Pokemon, index: number) => {
         if (
